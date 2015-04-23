@@ -1,36 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>To-do List 2.0</title>
+	<title>TODO-list2.0</title>
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
 	<div class="wrap">
 		<div class="task-list">
 			<ul>
-				<?php require("includes/connect.php"); ?>
+		<!-- this is all server side code  -->
+				<?php require("includes/connect.php"); 
+				$mysqli = new mysqli('localhost', 'root', 'root', 'todo2');
+				//this query is ordering a task by date and time
+				$query = 'SELECT * FROM tasks ORDER BY date ASC, time ASC';
+				if($result = $mysqli->query($query)){
+					$numrows = $result->num_rows;
+					if($numrows>0){
+						while($row = $result->fetch_assoc()){
+							$task_id = $row['id'];
+							$task_name = $row['task'];
+
+							echo '<li>
+							<span>'.$task_name.'</span>
+							<img id="'.$task_id.'" class="delete-button" width="10px" src="img/close.svg"/>
+							</li>';
+						}
+					}
+				}
+				?>
+			<!-- End of server side code -->
 			</ul>
 		</div>
+		
 	<form class="add-new-task" autocomplete="off">
-		<input type="text" name="new-task" placeholder="Add new item.."/>
+		<input type="text" name="new-task" placeholder="Add new item..."/>
 	</form>
+	</div>
 </body>
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
-	add_task();//calling the add task function
-
+	add_task();
+	//This is my add_task function
 	function add_task(){
 		$('.add-new-task').submit(function(){
-			var new_task = $('.add-new-task input[name=new-task').val();
-
-			if (new_task != '') {
-				$.post('includes/add-task.php', { task: new_task}, function(data) {
+			var new_task = $('.add-new-task input[name=new-task]').val();
+			//This if statement is ckecking if new_task is true or not  
+			if(new_task != ''){
+				$.post('includes/add-task.php', {task: new_task}, function(data){
 					$('add-new-task input[name=new-task]').val();
-						$(data).appendTo('task-list ul').hide().fadeIn();
+						$(data).appendTo('.task-list ul').hide().fadeIn();
 				});
 			}
 			return false;
 		});
 	}
+	//this function will fade a element when cliked on. the element will come from mt delete-task.php file. 
+	$('delete-button').click(function(){
+		var current_element = $(this);
+		var task_id = $(this).attr('id');
+
+		$.post('includes/delete-task.php', {id: task_id}, function(){
+		current_element.parent().fadeOut("fast", function(){
+			$(this).remove();
+		});
+	});
+});
 </script>
 </html>

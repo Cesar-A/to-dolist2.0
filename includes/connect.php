@@ -1,11 +1,15 @@
 <?php
-$mysqli = new mysqli('localhost', 'root', 'root', 'todo-list'); //connecting to database on phpmyadmin(already fixed 5.1 error)
-if ($mysqli->connect_error){//if theres a connection error
-	die('Connect Error (' . $mysqli->connect_errno . ')'//kill it
-		. $mysqli->connect_error);//if theres an error
+$mysqli = new mysqli('localhost', 'root', 'root', 'todo2');
+//$mysqli->connect_error will kill the code and an erroir message will pop up
+if($mysqli->connect_error){
+	die('Connect Error(' . $mysqli->connect_errno . ')'
+		. $mysqli->connect_errno);
+}else{
+	// echo "Connection Made";
 }
-else{//if not
-	echo"Connection made";// tell user that connection has been made
-}
-$mysqli->close();////closes mysqli
+$mysqli->close();
+
+
+
+
 ?>
